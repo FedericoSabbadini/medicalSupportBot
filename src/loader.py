@@ -55,6 +55,8 @@ class Loader:
 
         text = ""
         for page in reader.pages:
-            text += page.extract_text() # type: ignore
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted
 
         return text
