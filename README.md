@@ -2,6 +2,18 @@
 
 A RAG-based REST API that answers questions about Italian pharmaceutical products. Given a drug's AIC code, it retrieves the official product documentation (illustrative sheet and product features) from a NocoDB database, then uses Claude to answer user questions strictly within that context.
 
+## Screenshots
+
+The bot is deployed as a Telegram bot, orchestrated via **n8n**. Here is a full interaction from start to answer:
+
+| Step | Screenshot |
+|------|------------|
+| 1. Bot introduction — user is prompted to send an AIC code | ![Welcome](docs/screenshot_1_welcome.PNG) |
+| 2. AIC submitted → bot returns both official PDFs (Foglio Illustrativo + RCP) and asks for a question | ![PDF delivery](docs/screenshot_2_pdf_delivery.PNG) |
+| 3. User types a question in the n8n-hosted form | ![Question form](docs/screenshot_5_question_form.PNG) |
+| 4. n8n confirms the submission | ![n8n confirm](docs/screenshot_3_n8n_confirm.PNG) |
+| 5. Claude answers based strictly on the official documentation | ![Answer](docs/screenshot_4_answer.PNG) |
+
 ## How it works
 
 1. A client sends a `GET` request with a `question` and an `AIC` code (Italian drug authorization number).
@@ -11,7 +23,7 @@ A RAG-based REST API that answers questions about Italian pharmaceutical product
 5. The answer is returned as JSON.
 
 ```
-Client → GET /?question=...&AIC=... → FastAPI Server → NocoDB → PDFs → Claude → JSON response
+User (Telegram) → n8n workflow → GET /?question=...&AIC=... → FastAPI Server → NocoDB → PDFs → Claude → n8n → Telegram reply
 ```
 
 ## Project structure
