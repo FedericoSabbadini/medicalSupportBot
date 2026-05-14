@@ -1,6 +1,5 @@
 from src.model import Model
 from fastapi import FastAPI
-import requests
 import uvicorn
 
 

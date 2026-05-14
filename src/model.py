@@ -1,5 +1,3 @@
-import requests
-import fitz
 from src.loader import Loader
 from src.llm import LLMmodel
 
