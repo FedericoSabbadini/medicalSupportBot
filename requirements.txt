@@ -1,0 +1,7 @@
+python-dotenv
+requests
+pymupdf
+langchain-anthropic
+langchain-core
+fastapi
+uvicorn

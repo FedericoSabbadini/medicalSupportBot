@@ -16,7 +16,7 @@ class Model:
     def ask(self, question: str, AIC: str):
 
         title, text_url1, text_url2 = self.loader.load(AIC) 
-        answer = self.llm.answer(question, title, text_url1, text_url2)
+        answer = self.llm.answer(question, title, text_url1, text_url2) # type: ignore
 
         return answer
 

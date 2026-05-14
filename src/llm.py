@@ -3,7 +3,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 
 class LLMmodel:
     def __init__(self, url:str, model: str = "claude-3-opus-20241201", api_key: str = "your-anthropic-api-key"):
-        self.llm = ChatAnthropic(model=model, api_key=api_key, temperature=0.7, max_tokens=150) # type: ignore
+        self.llm = ChatAnthropic(model=model, api_key=api_key, temperature=0.7) # type: ignore
 
     def answer(self, question: str, title: str, file_1: str, file_2: str):
         messages = [
