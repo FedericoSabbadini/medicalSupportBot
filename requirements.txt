@@ -1,7 +1,8 @@
-python-dotenv
-requests
-pymupdf
+anthropic
 langchain-anthropic
 langchain-core
 fastapi
 uvicorn
+pypdf
+requests
+python-dotenv
