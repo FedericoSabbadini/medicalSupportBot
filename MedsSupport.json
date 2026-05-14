@@ -385,8 +385,18 @@
         "method": "POST",
         "url": "https://app.nocodb.com/api/v1/db/data/v1/ptg75ks2ckib5g3/m9nlkcqq1et5zbo",
         "sendHeaders": true,
-        "specifyHeaders": "json",
-        "jsonHeaders": "{\n  \"xc-token\": \"nc_pat_jeTZ-0C0br-5sCydKNsuZ07_OwdbHFg-FPIxIUr_\",\n  \"Content-Type\": \"application/json\"\n}",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xc-token",
+              "value": "={{$vars.N8N_VAR_NOCODB_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "=application/json"
+            }
+          ]
+        },
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -465,8 +475,18 @@
           ]
         },
         "sendHeaders": true,
-        "specifyHeaders": "json",
-        "jsonHeaders": "{\n  \"xc-token\": \"nc_pat_jeTZ-0C0br-5sCydKNsuZ07_OwdbHFg-FPIxIUr_\"\n}",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xc-token",
+              "value": "={{$vars.N8N_VAR_NOCODB_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "=application/json"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -877,7 +897,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "8c1ec5ce-8f0e-4bae-ab93-9045974427e9",
+  "versionId": "a424137c-cfcd-4f70-b669-231a625aa8d2",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "2d78610a77ef3beeef9cf38825b865e3f273c30458902454dbe972868209d34f"
