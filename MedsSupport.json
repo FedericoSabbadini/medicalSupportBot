@@ -386,7 +386,7 @@
         "url": "https://app.nocodb.com/api/v1/db/data/v1/ptg75ks2ckib5g3/m9nlkcqq1et5zbo",
         "sendHeaders": true,
         "specifyHeaders": "json",
-        "jsonHeaders": "{\n  \"xc-token\": \"nc_pat_jeTZ-0C0br-5sCydKNsuZ07_OwdbHFg-FPIxIUr_\",\n  \"Content-Type\": \"application/json\"\n}",
+        "jsonHeaders": "{\n  \"xc-token\": \"__key__",\n  \"Content-Type\": \"application/json\"\n}",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
