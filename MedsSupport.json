@@ -525,7 +525,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -400,
+        -352,
         -448
       ],
       "id": "59f41d84-4470-4504-9e46-b6271ce04c37",
@@ -599,7 +599,7 @@
     {
       "parameters": {
         "chatId": "={{$('Edit Fields').item.json.chatId  }}",
-        "text": "={{ $json.answer.response }}",
+        "text": "={{ $json.response }}",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
@@ -897,7 +897,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "a424137c-cfcd-4f70-b669-231a625aa8d2",
+  "versionId": "7e6d8bb0-6aa5-4504-b001-4469bcfe0d66",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "2d78610a77ef3beeef9cf38825b865e3f273c30458902454dbe972868209d34f"
