@@ -1,5 +1,7 @@
 import requests
 import fitz  # pymupdf
+from pypdf import PdfReader
+import io
 
 class Loader:
     def __init__(self, databaseURL: str, databaseKey: str):
@@ -43,13 +45,16 @@ class Loader:
                 "Accept": "application/pdf"
             }
         )
-        doc = fitz.open(
-            stream=response.content,
-            filetype="pdf"
-        )
+        #doc = fitz.open(
+        #    stream=response.content,
+        #    filetype="pdf"
+        #)
+        # let's create an alternative version
+        reader = PdfReader(io.BytesIO(response.content))
+        
 
         text = ""
-        for page in doc:
-            text += page.get_text() # type: ignore
+        for page in reader.pages:
+            text += page.extract_text() # type: ignore
 
         return text
