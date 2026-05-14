@@ -1,5 +1,4 @@
 import requests
-import fitz  # pymupdf
 from pypdf import PdfReader
 import io
 
