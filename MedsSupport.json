@@ -1,0 +1,887 @@
+{
+  "name": "MedsSupport",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2288,
+        0
+      ],
+      "id": "6342f92e-6e22-445c-90b2-b8f4e0ff23d8",
+      "name": "Telegram Trigger",
+      "webhookId": "ac3f14d3-7ee6-4245-9517-a85ddfed9f2d",
+      "credentials": {
+        "telegramApi": {
+          "id": "OaTP2LoR3pDlkdZy",
+          "name": "MedsSupport_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "90e32c3a-d0d7-4db3-8f11-512e1fba4b82",
+              "name": "AIC6",
+              "value": "={{ ($json.message.text.substring(1,6))}}",
+              "type": "string"
+            },
+            {
+              "id": "3945f374-84db-4c31-9267-dc427779bd46",
+              "name": "AIC",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "93275610-480d-443d-90dd-c4c843598be3",
+              "name": "chatId",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "d608025b-d190-439e-ad27-f286dbf223a4",
+              "name": "username",
+              "value": "={{ $json.message.from.username }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2064,
+        0
+      ],
+      "id": "b8d9583d-89f3-4843-acbd-06026647ba2f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.aifa.gov.it/aifa-bdf-eif-be/1.0.0/organizzazione/{{ $json.codiceSis }}/farmaci/{{$('Edit Fields').item.json.AIC6  }}/stampati?ts=FI",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "file",
+              "outputPropertyName": "=data"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -720,
+        -192
+      ],
+      "id": "9ba65153-90fe-4bc5-b255-3e504270128d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "405a7934-fac4-4ccf-b148-f8ac1fc5714b",
+              "leftValue": "={{ $json.farmaco }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -944,
+        -96
+      ],
+      "id": "59c2f074-9dcb-49ed-bbfd-c97e435d211a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$('Edit Fields').item.json.chatId  }}",
+        "text": "=File with AIC \"{{ $('Edit Fields').item.json.AIC }}\" not found ",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -720,
+        0
+      ],
+      "id": "6f70746a-79ff-4399-99c3-61f77e6ff96e",
+      "name": "Send a text message",
+      "webhookId": "53ae4d7f-5be3-4050-9b2a-5b8a7b8f4cb7",
+      "credentials": {
+        "telegramApi": {
+          "id": "OaTP2LoR3pDlkdZy",
+          "name": "MedsSupport_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Edit Fields').item.json.chatId }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "=Questo è il Foglio Illustrativo per il farmaco {{ $('Edit Fields1').item.json.farmaco}} ({{ $('Edit Fields').item.json.AIC }})",
+          "fileName": "={{ $('Edit Fields1').item.json.farmaco }}_FI.pdf"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -496,
+        -192
+      ],
+      "id": "46dadb6a-d265-4575-9f26-d21ee760155e",
+      "name": "Send a document",
+      "webhookId": "beff3213-e657-4bca-8bbe-754d1ebfdf65",
+      "credentials": {
+        "telegramApi": {
+          "id": "OaTP2LoR3pDlkdZy",
+          "name": "MedsSupport_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c97218a6-6e90-4d28-a270-c92e1e5424c8",
+              "leftValue": "={{ $json.AIC6.isNumeric() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1840,
+        0
+      ],
+      "id": "43c5b3e1-6c8a-4f9b-8191-70701c4fbf24",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Edit Fields').item.json.chatId }}",
+        "binaryData": true,
+        "binaryPropertyName": "=data2",
+        "additionalFields": {
+          "caption": "=Questo è il Riassunto delle Caratteristiche di Prodotto per il farmaco {{ $('Edit Fields1').item.json.farmaco }} ({{ $('Edit Fields').item.json.AIC }})",
+          "fileName": "={{ $('Edit Fields1').item.json.farmaco }}_RCP.pdf"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        -208
+      ],
+      "id": "ecbce93b-ae3f-49be-9513-a135a2d2bf06",
+      "name": "Send a document1",
+      "webhookId": "beff3213-e657-4bca-8bbe-754d1ebfdf65",
+      "credentials": {
+        "telegramApi": {
+          "id": "OaTP2LoR3pDlkdZy",
+          "name": "MedsSupport_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.aifa.gov.it/aifa-bdf-eif-be/1.0.0/organizzazione/{{ $('Edit Fields1').item.json.codiceSis }}/farmaci/{{ $('Edit Fields').item.json.AIC6 }}/stampati?ts=RCP\n",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "file",
+              "outputPropertyName": "=data2"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -272,
+        -192
+      ],
+      "id": "fde8994d-2be6-44b5-81c8-d66ae2e4d6f8",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "405a7934-fac4-4ccf-b148-f8ac1fc5714b",
+              "leftValue": "={{$json.statusCode === 200}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -48,
+        -192
+      ],
+      "id": "56029230-b045-4340-9202-2810c89a30eb",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Edit Fields').item.json.chatId }}",
+        "text": "=Invia il codice AIC del farmaco",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1616,
+        96
+      ],
+      "id": "abd2b633-668e-4280-b6bd-c3ec7d684d50",
+      "name": "Send a text message1",
+      "webhookId": "53ae4d7f-5be3-4050-9b2a-5b8a7b8f4cb7",
+      "credentials": {
+        "telegramApi": {
+          "id": "OaTP2LoR3pDlkdZy",
+          "name": "MedsSupport_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.aifa.gov.it/aifa-bdf-eif-be/1.0.0/formadosaggio/ricerca?query={{$json.AIC}}&spellingCorrection=true&page=0",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "file",
+              "outputPropertyName": "=data2"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1616,
+        -96
+      ],
+      "id": "e90f6616-5ee7-496e-8e3a-7ea119780ea5",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "binaryPropertyName": "={{ $binary.data2 }}",
+        "destinationKey": "data2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1392,
+        -96
+      ],
+      "id": "d3455b20-66dd-436a-9471-c12dd079efdc",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d608025b-d190-439e-ad27-f286dbf223a4",
+              "name": "farmaco",
+              "value": "={{ $json.data2.data.content[0].medicinale.denominazioneMedicinale }}",
+              "type": "string"
+            },
+            {
+              "id": "4eb57221-d921-4c3c-9062-54d084d10132",
+              "name": "codiceSis",
+              "value": "={{ $json.data2.data.content[0].medicinale.codiceSis }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1168,
+        -96
+      ],
+      "id": "a73bb523-b077-4591-bfb4-462a9a5027bc",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.nocodb.com/api/v1/db/data/v1/ptg75ks2ckib5g3/m9nlkcqq1et5zbo",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"xc-token\": \"nc_pat_jeTZ-0C0br-5sCydKNsuZ07_OwdbHFg-FPIxIUr_\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Title",
+              "value": "={{ $('Edit Fields1').item.json.farmaco }}"
+            },
+            {
+              "name": "URL1",
+              "value": "=https://api.aifa.gov.it/aifa-bdf-eif-be/1.0.0/organizzazione/{{ $('Edit Fields1').item.json.codiceSis }}/farmaci/{{$('Edit Fields').item.json.AIC6  }}/stampati?ts=FI"
+            },
+            {
+              "name": "AIC",
+              "value": "={{ $('Edit Fields').item.json.AIC }}"
+            },
+            {
+              "name": "URL2",
+              "value": "=https://api.aifa.gov.it/aifa-bdf-eif-be/1.0.0/organizzazione/{{ $('Edit Fields1').item.json.codiceSis }}/farmaci/{{ $('Edit Fields').item.json.AIC6 }}/stampati?ts=RCP"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -48,
+        -432
+      ],
+      "id": "ee3e7df4-b0bd-4499-92e9-2d92793d9343",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        0
+      ],
+      "id": "3d6cea0b-3ef1-4953-b0db-93a806f0e9d8",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1424,
+        96
+      ],
+      "id": "6b886195-1c60-4cc2-8569-be92472e0722",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        144,
+        -544
+      ],
+      "id": "85ae8ae3-a102-4adb-83a7-7cb2dc92adb4",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "url": "=https://app.nocodb.com/api/v1/db/data/v1/ptg75ks2ckib5g3/m9nlkcqq1et5zbo",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "where",
+              "value": "=(AIC,eq,{{ $('Edit Fields').item.json.AIC }})"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"xc-token\": \"nc_pat_jeTZ-0C0br-5sCydKNsuZ07_OwdbHFg-FPIxIUr_\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -592,
+        -448
+      ],
+      "id": "065bc346-c8cc-4f31-a682-0b120470a021",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2cb37fd3-f13b-47f7-aca8-3d0af9bd3652",
+              "leftValue": "={{ $json.list[0].AIC.toNumber() }}",
+              "rightValue": "={{ $('Edit Fields').item.json.AIC.toNumber()}}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -400,
+        -448
+      ],
+      "id": "59f41d84-4470-4504-9e46-b6271ce04c37",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "url": "https://obnoxious-viewing-late.ngrok-free.dev",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "question",
+              "value": "={{ $json.data[\"Question:\"] }}"
+            },
+            {
+              "name": "AIC",
+              "value": "={{ $('Edit Fields').item.json.AIC }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1200,
+        -208
+      ],
+      "id": "b0f4859b-a4a7-40f0-a8b0-4573374cdc0c",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $json.result.chat.id }}",
+        "message": "If you have answers about the previous AIC, I'm here attending your query in 1 minute.",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Question:",
+              "placeholder": "My question is related to . . ."
+            }
+          ]
+        },
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeUnit": "minutes"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        -208
+      ],
+      "id": "a31c93b6-0a0b-4465-8081-6fefa9350fb1",
+      "name": "Send message and wait for response",
+      "webhookId": "ba0eabd5-7bfa-44db-b293-ebaf08b87e92",
+      "credentials": {
+        "telegramApi": {
+          "id": "OaTP2LoR3pDlkdZy",
+          "name": "MedsSupport_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{$('Edit Fields').item.json.chatId  }}",
+        "text": "={{ $json.answer.response }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        -208
+      ],
+      "id": "4c360aee-1161-4bcd-8e43-e29e71a44004",
+      "name": "Send a text message3",
+      "webhookId": "53ae4d7f-5be3-4050-9b2a-5b8a7b8f4cb7",
+      "credentials": {
+        "telegramApi": {
+          "id": "OaTP2LoR3pDlkdZy",
+          "name": "MedsSupport_bot"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        -208
+      ],
+      "id": "b5902ebf-add2-4547-a8a9-ee4933086987",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a document",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a document": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Send a document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a document1": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message3": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        []
+      ]
+    },
+    "No Operation, do nothing3": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "8c1ec5ce-8f0e-4bae-ab93-9045974427e9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2d78610a77ef3beeef9cf38825b865e3f273c30458902454dbe972868209d34f"
+  },
+  "id": "1bIv0KoBFeKWo6nb",
+  "tags": []
+}
